@@ -1,0 +1,34 @@
+---
+import { Icon } from "astro-icon/components";
+
+const navData = [
+  {
+    title: "Projects",
+    href: "/projects",
+  },
+  {
+    title: "Home",
+    href: "/",
+    icon: "logomark",
+  },
+  {
+    title: "Writings",
+    href: "/blog",
+  },
+];
+---
+
+<nav>
+  <ul>
+    {
+      navData.map((item) => (
+        <li>
+          <a href={item.href} aria-label={item.icon && item.title}>
+            {!item.icon && item.title}
+            {item.icon && <Icon name={item.icon} size={48} aria-hidden="true" />}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

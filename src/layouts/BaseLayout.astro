@@ -1,0 +1,21 @@
+---
+// components
+import Footer from "@/components/Footer.astro";
+import BaseHead from "./BaseHead.astro";
+import Nav from "@/components/Nav.astro";
+
+// styles
+import "@/styles/global.css";
+
+---
+
+<html lang="en">
+	<BaseHead {...Astro.props} />
+	<body>
+    <Nav />
+		<main>
+      <slot />
+    </main>
+    <Footer />
+	</body>
+</html>

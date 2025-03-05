@@ -1,0 +1,103 @@
+---
+import { Image } from "astro:assets";
+
+// Assets
+import avatar from "@/assets/avatar.jpg";
+import Heading from "./ui/Heading.astro";
+---
+
+<section id="contact" aria-label="Contact Form" class="relative">
+  <div data-pattern></div>
+  <div class="form-wrapper">
+    <Image
+      src={avatar}
+      alt="Katie Haus"
+      width={700}
+      format="avif"
+      class="headshot"
+    />
+    <form id="contact-form">
+      <Heading tagName="h2" size="h2">Let's connect</Heading>
+      <p>Reach out below for inquiries, quotes, or collaborations.</p>
+      <div class="input-wrapper">
+        <label for="name">First Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          required
+          placeholder="e.g., Katie Haus"
+          required
+        />
+      </div>
+      <div class="input-wrapper">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          placeholder="e.g., hi@email.com"
+          required
+        />
+      </div>
+      <button type="submit" class="btn primary">Contact Me</button>
+      <p class="message"></p>
+    </form>
+  </div>
+</section>
+
+<script>
+  const contactForm = document.querySelector(
+    "#contact-form"
+  ) as HTMLFormElement;
+
+  const messageParagraph = document.querySelector(
+    ".message"
+  ) as HTMLParagraphElement;
+
+  const updateMessage = (text: string, type: "error" | "success") => {
+    messageParagraph.classList.add(type);
+    messageParagraph.textContent = text;
+    setTimeout(() => {
+      messageParagraph.textContent = "";
+      messageParagraph.classList.remove(type);
+    }, 3000);
+  };
+
+  contactForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(contactForm);
+    const allEntries = Object.fromEntries(formData);
+    const { name, email } = allEntries;
+
+    // Note: More validation!
+    if (!name || typeof name !== "string" || name.length < 2) {
+      return updateMessage("Please enter a valid name.", "error");
+    }
+    if (!email || typeof email !== "string" || !email.includes("@")) {
+      return updateMessage("Please enter a valid email.", "error");
+    }
+
+    try {
+      const response = await fetch("http://localhost:3001/contacts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email }),
+      });
+      if (!response.ok) {
+        throw new Error("There was an error sending your message.");
+      }
+      contactForm.reset();
+      return updateMessage("Message sent successfully!", "success");
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        return updateMessage(error.message, "error");
+      }
+      return updateMessage("There was an error sending your message.", "error");
+    }
+  });
+</script>
